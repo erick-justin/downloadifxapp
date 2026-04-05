@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intelligence FX — Trade Smarter</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #000000;
+      --bg2:      #0a0a0a;
+      --bg3:      #111111;
+      --bg4:      #181818;
+      --border:   rgba(255,255,255,.08);
+      --border-y: rgba(254,187,19,.25);
+      --yellow:   #F4BA46;
+      --yellow-d: #c9950d;
+      --yellow-l: #f9cc72;
+      --white:    #ffffff;
+      --muted:    rgba(255,255,255,.42);
+      --muted2:   rgba(255,255,255,.18);
+      --card:     rgba(255,255,255,.03);
+      --card-b:   rgba(255,255,255,.07);
+      --green:    #3ddc84;
+      --red:      #ff5252;
+      --glow-y:   0 0 60px rgba(254,187,19,.22);
+      --shadow:   0 24px 80px rgba(0,0,0,.8);
+      --radius:   16px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Subtle grid bg ──────────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    /* Yellow glow blob top center */
+    .glow-hero {
+      position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(254,187,19,.12) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 68px;
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 11px;
+      font-weight: 800; font-size: 1.05rem; letter-spacing: -.01em;
+    }
+    .nav-logo-mark {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--yellow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 900; color: #000; letter-spacing: -.02em;
+    }
+    .nav-links { display: flex; gap: 36px; font-size: .88rem; color: var(--muted); }
+    .nav-links a { transition: color .2s; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      background: var(--yellow); color: #000;
+      font-weight: 800; font-size: .85rem; letter-spacing: .01em;
+      padding: 9px 22px; border-radius: 8px;
+      transition: background .2s, transform .2s;
+    }
+    .nav-cta:hover { background: var(--yellow-l); transform: translateY(-1px); }
+
+    /* ══════════════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════════════ */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 130px 24px 90px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border-y);
+      background: rgba(254,187,19,.07);
+      color: var(--yellow); font-size: .75rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: 6px 16px; border-radius: 4px; margin-bottom: 30px;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--yellow); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    h1 {
+      font-size: clamp(3rem, 7.5vw, 6rem);
+      font-weight: 900; letter-spacing: -.04em; line-height: 1.0;
+      max-width: 960px;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--yellow);
+    }
+    .hero-sub {
+      margin-top: 22px; font-size: 1.1rem; color: var(--muted);
+      max-width: 520px; line-height: 1.75;
+    }
+
+    /* Toggle */
+    .view-toggle {
+      display: flex; margin: 44px auto 0;
+      border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden; width: fit-content;
+    }
+    .vt-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 26px; font-size: .85rem; font-weight: 700;
+      cursor: pointer; border: none; background: transparent;
+      color: var(--muted); transition: all .22s; letter-spacing: .01em;
+    }
+    .vt-btn.active { background: var(--yellow); color: #000; }
+    .vt-btn:not(.active):hover { color: #fff; background: rgba(255,255,255,.05); }
+
+    /* Hero CTA row */
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 44px; }
+    .btn-hero {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 30px; border-radius: 10px; border: none;
+      font-size: .95rem; font-weight: 700; cursor: pointer;
+      transition: all .25s; text-decoration: none;
+    }
+    .btn-hero.main {
+      background: var(--yellow); color: #000;
+      box-shadow: var(--glow-y);
+    }
+    .btn-hero.main:hover { background: var(--yellow-l); transform: translateY(-2px); box-shadow: 0 0 80px rgba(254,187,19,.35); }
+    .btn-hero.ghost {
+      background: transparent; color: var(--white);
+      border: 1px solid var(--border);
+    }
+    .btn-hero.ghost:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.05); transform: translateY(-2px); }
+    .btn-hero-icon { font-size: 1.3rem; }
+    .btn-hero-sub { font-size: .68rem; font-weight: 500; opacity: .65; text-transform: uppercase; letter-spacing: .05em; }
+    .btn-hero-name { font-size: .95rem; font-weight: 800; margin-top: 1px; }
+
+    /* Stats strip */
+    .hero-stats {
+      display: flex; gap: 0; margin-top: 64px;
+      border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; background: rgba(255,255,255,.02);
+    }
+    .stat {
+      padding: 18px 36px; border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .stat:last-child { border-right: none; }
+    .stat-n { font-size: 1.5rem; font-weight: 900; letter-spacing: -.03em; }
+    .stat-n span { color: var(--yellow); }
+    .stat-l { font-size: .72rem; color: var(--muted); margin-top: 2px; letter-spacing: .04em; text-transform: uppercase; }
+
+    /* ══════════════════════════════════════════════════════════
+       SHOWCASE
+    ══════════════════════════════════════════════════════════ */
+    .showcase {
+      position: relative; z-index: 1;
+      padding: 100px 24px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .sec-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--yellow); margin-bottom: 14px; }
+    .sec-title { font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: -.03em; text-align: center; max-width: 560px; }
+    .sec-sub { color: var(--muted); margin-top: 12px; font-size: .95rem; text-align: center; max-width: 480px; line-height: 1.7; }
+
+    .screen-wrap { margin-top: 64px; width: 100%; max-width: 1080px; }
+
+    /* ── Phone frames ────────────────────────────────────────── */
+    .mobile-view { display: flex; justify-content: center; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+
+    .phone {
+      width: 218px; flex-shrink: 0; border-radius: 38px;
+      background: #0d0d0d;
+      border: 1.5px solid rgba(255,255,255,.1);
+      box-shadow: var(--shadow);
+      overflow: hidden; transition: transform .3s;
+    }
+    .phone:nth-child(1) { transform: scale(.87) translateY(28px); }
+    .phone:nth-child(2) { box-shadow: var(--shadow), var(--glow-y); border-color: rgba(254,187,19,.3); }
+    .phone:nth-child(3) { transform: scale(.87) translateY(28px); }
+    .phone:hover { transform: scale(1.04) !important; z-index: 5; }
+
+    .phone-notch { width: 90px; height: 24px; background: #000; border-radius: 0 0 16px 16px; margin: 0 auto; }
+
+    /* App screen base */
+    .scr { padding: 14px 12px; min-height: 390px; background: #0a0a0a; }
+
+    .scr-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .scr-title { font-size: .72rem; font-weight: 800; }
+    .scr-sub { font-size: .52rem; color: var(--muted); margin-top: 1px; }
+    .ava { width: 26px; height: 26px; border-radius: 50%; background: var(--yellow); display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#000; }
+
+    .card {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 11px; padding: 11px; margin-bottom: 9px;
+    }
+    .card-label { font-size: .52rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 4px; }
+    .card-val { font-size: .95rem; font-weight: 900; }
+
+    .clr-green { color: var(--green); }
+    .clr-red   { color: var(--red); }
+    .clr-yel   { color: var(--yellow); }
+
+    .mini-bar { height: 3px; border-radius: 3px; background: rgba(255,255,255,.08); overflow:hidden; margin-top: 6px; }
+    .mini-bar-fill { height: 100%; border-radius: 3px; }
+
+    .sparkline { width: 100%; height: 46px; }
+    .sparkline svg { width: 100%; height: 100%; }
+
+    .pill { display:inline-flex;align-items:center;font-size:.48rem;padding:2px 8px;border-radius:20px;font-weight:700;gap:3px; }
+    .pill-g { background:rgba(61,220,132,.12);color:var(--green); }
+    .pill-r { background:rgba(255,82,82,.12);color:var(--red); }
+    .pill-y { background:rgba(254,187,19,.12);color:var(--yellow); }
+    .pill-w { background:rgba(255,255,255,.08);color:rgba(255,255,255,.6); }
+
+    .pill-row { display:flex;gap:5px;flex-wrap:wrap;margin-top:6px; }
+
+    .t-row { display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05); }
+    .t-pair { font-size:.6rem;font-weight:800; }
+    .t-meta { font-size:.5rem;color:var(--muted); }
+    .t-pnl  { font-size:.62rem;font-weight:800; }
+
+    .calc-in {
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+      border-radius:8px;padding:8px 10px;flex:1;
+    }
+    .calc-in-label { font-size:.5rem;color:var(--muted); }
+    .calc-in-val   { font-size:.72rem;font-weight:800;margin-top:2px; }
+    .calc-row-2 { display:flex;gap:7px;margin-bottom:8px; }
+
+    .calc-result {
+      background:rgba(254,187,19,.08);border:1px solid rgba(254,187,19,.2);
+      border-radius:10px;padding:12px;text-align:center;margin-top:8px;
+    }
+    .calc-result-label { font-size:.5rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted); }
+    .calc-result-val   { font-size:1.15rem;font-weight:900;color:var(--yellow);margin-top:3px; }
+
+    .bnav {
+      display:flex;justify-content:space-around;
+      padding:9px 0 5px; border-top:1px solid rgba(255,255,255,.07);
+      background:#080808;
+    }
+    .bnav-i { display:flex;flex-direction:column;align-items:center;gap:3px; }
+    .bnav-ico { font-size:.85rem; }
+    .bnav-lbl { font-size:.43rem;color:var(--muted); }
+    .bnav-i.on .bnav-ico { filter: none; }
+    .bnav-i.on .bnav-lbl { color:var(--yellow); }
+    .bnav-dot { width:4px;height:4px;border-radius:50%;background:var(--yellow);margin:0 auto;margin-top:-2px; }
+
+    /* ── Desktop frame ───────────────────────────────────────── */
+    .desktop-view { display:none; width:100%; }
+    .df {
+      background:#0d0d0d; border-radius:14px;
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow: var(--shadow), var(--glow-y);
+      overflow:hidden;
+    }
+    .df-bar {
+      background:#000; padding:11px 18px;
+      display:flex; align-items:center; gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+    .df-dots { display:flex;gap:5px; }
+    .df-dot { width:11px;height:11px;border-radius:50%; }
+    .df-dot.r{background:#ff5f56;} .df-dot.y{background:#ffbd2e;} .df-dot.g{background:#27c93f;}
+    .df-bar-title { font-size:.72rem;color:var(--muted);margin:0 auto; }
+    .df-bar-right { display:flex;align-items:center;gap:8px; }
+    .df-tag { font-size:.58rem;padding:3px 10px;border-radius:20px;background:rgba(254,187,19,.12);color:var(--yellow);font-weight:700; }
+
+    .df-body { display:flex;height:500px; }
+
+    .df-sidebar {
+      width:200px;flex-shrink:0;
+      background:#000;border-right:1px solid rgba(255,255,255,.06);
+      display:flex;flex-direction:column;padding:16px 0;
+      gap:2px;
+    }
+    .df-logo { display:flex;align-items:center;gap:9px;padding:0 14px 18px;font-weight:900;font-size:.82rem; }
+    .df-logo-mark { width:26px;height:26px;border-radius:7px;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:900;color:#000; }
+    .df-sec { font-size:.48rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.25);padding:10px 14px 4px; }
+    .df-item {
+      display:flex;align-items:center;gap:9px;padding:8px 14px;
+      font-size:.72rem;color:var(--muted);cursor:pointer;margin:0 6px;border-radius:7px;
+      transition:all .2s;
+    }
+    .df-item:hover { background:rgba(255,255,255,.04);color:#fff; }
+    .df-item.on { background:rgba(254,187,19,.1);color:var(--yellow); }
+    .df-item-ico { font-size:.9rem;width:18px;text-align:center; }
+    .df-badge { margin-left:auto;background:var(--yellow);color:#000;font-size:.45rem;font-weight:900;padding:2px 6px;border-radius:20px; }
+
+    .df-main { flex:1;overflow:hidden;padding:22px;display:flex;flex-direction:column;gap:14px; }
+    .df-top { display:flex;justify-content:space-between;align-items:flex-start; }
+    .df-page-title { font-size:1.05rem;font-weight:900;letter-spacing:-.02em; }
+    .df-page-sub { font-size:.68rem;color:var(--muted);margin-top:2px; }
+    .df-actions { display:flex;gap:7px; }
+    .df-btn { font-size:.65rem;padding:7px 14px;border-radius:7px;border:none;cursor:pointer;font-weight:700; }
+    .df-btn.p { background:var(--yellow);color:#000; }
+    .df-btn.g { background:rgba(255,255,255,.06);color:#fff;border:1px solid var(--border); }
+
+    .kpi-row { display:grid;grid-template-columns:repeat(4,1fr);gap:10px; }
+    .kpi {
+      background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+      border-radius:10px;padding:13px;
+    }
+    .kpi-label { font-size:.52rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px; }
+    .kpi-val { font-size:1.15rem;font-weight:900;letter-spacing:-.02em; }
+    .kpi-change { font-size:.58rem;margin-top:3px; }
+
+    .content-row { display:grid;grid-template-columns:1.4fr 1fr;gap:10px;flex:1;min-height:0; }
+    .df-panel { background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px;overflow:hidden; }
+    .df-panel-title { font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center; }
+    .df-panel-title span { color:var(--yellow); }
+
+    .df-chart { width:100%;height:130px; }
+    .df-chart svg { width:100%;height:100%; }
+
+    .df-table { width:100%;border-collapse:collapse; }
+    .df-table th { font-size:.48rem;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.28);text-align:left;padding:0 0 7px;border-bottom:1px solid rgba(255,255,255,.06); }
+    .df-table td { font-size:.62rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04); }
+    .db { display:inline-block;font-size:.46rem;padding:2px 7px;border-radius:20px;font-weight:800; }
+    .db.w{background:rgba(61,220,132,.12);color:var(--green);}
+    .db.l{background:rgba(255,82,82,.12);color:var(--red);}
+    .db.o{background:rgba(254,187,19,.12);color:var(--yellow);}
+
+    /* toggle */
+    [data-view="desktop"] .mobile-view  { display:none; }
+    [data-view="desktop"] .desktop-view { display:block; }
+
+    /* ══════════════════════════════════════════════════════════
+       FEATURES
+    ══════════════════════════════════════════════════════════ */
+    .features {
+      position:relative;z-index:1;
+      padding:90px 24px 100px;
+      max-width:1100px;margin:0 auto;
+    }
+    .feat-head { text-align:center;margin-bottom:56px; }
+    .feat-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden; }
+    .feat-card {
+      background:var(--bg2);padding:32px;
+      transition:background .25s;
+    }
+    .feat-card:hover { background:#111; }
+    .feat-ico { font-size:1.6rem;margin-bottom:16px;display:block; }
+    .feat-title { font-size:.95rem;font-weight:800;margin-bottom:8px;letter-spacing:-.01em; }
+    .feat-desc { font-size:.85rem;color:var(--muted);line-height:1.7; }
+    .feat-tag { display:inline-block;margin-top:12px;font-size:.65rem;font-weight:700;color:var(--yellow);letter-spacing:.03em; }
+
+    /* ══════════════════════════════════════════════════════════
+       PLATFORMS
+    ══════════════════════════════════════════════════════════ */
+    .platforms { position:relative;z-index:1;padding:90px 24px 100px; }
+    .plat-inner { max-width:1100px;margin:0 auto; }
+    .plat-head { text-align:center;margin-bottom:56px; }
+    .plat-grid { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
+
+    .plat-card {
+      background:var(--bg2);border:1px solid var(--border);
+      border-radius:var(--radius);padding:44px 40px;
+      position:relative;overflow:hidden;
+      transition:border-color .3s, box-shadow .3s;
+    }
+    .plat-card:hover { border-color:rgba(254,187,19,.3);box-shadow:0 0 60px rgba(254,187,19,.06); }
+
+    .plat-corner {
+      position:absolute;top:0;right:0;width:180px;height:180px;
+      background:radial-gradient(circle at top right, rgba(254,187,19,.07), transparent 70%);
+    }
+
+    .plat-icon { font-size:2.6rem;margin-bottom:22px;display:block; }
+    .plat-title { font-size:1.3rem;font-weight:900;letter-spacing:-.02em;margin-bottom:10px; }
+    .plat-desc { font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:26px; }
+    .plat-list { list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:32px; }
+    .plat-list li {
+      font-size:.84rem;color:var(--muted);display:flex;align-items:center;gap:10px;
+    }
+    .plat-list li::before { content:'—';color:var(--yellow);font-weight:900; }
+
+    .btn-plat {
+      display:inline-flex;align-items:center;gap:10px;
+      padding:13px 26px;border-radius:9px;font-weight:800;font-size:.88rem;
+      cursor:pointer;border:none;transition:all .25s;
+    }
+    .btn-plat.desk { background:var(--yellow);color:#000; }
+    .btn-plat.desk:hover { background:var(--yellow-l);transform:translateY(-2px); }
+    .btn-plat.mob  { background:rgba(255,255,255,.07);color:#fff;border:1px solid var(--border); }
+    .btn-plat.mob:hover { background:rgba(255,255,255,.12);transform:translateY(-2px); }
+
+    .os-row { display:flex;gap:9px;margin-top:16px; }
+    .os-tag { font-size:.7rem;padding:4px 13px;border-radius:4px;border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;gap:5px; }
+
+    /* ══════════════════════════════════════════════════════════
+       DOWNLOAD
+    ══════════════════════════════════════════════════════════ */
+    .download { position:relative;z-index:1;padding:90px 24px 120px; }
+    .dl-inner {
+      max-width:860px;margin:0 auto;
+      background:var(--bg2);
+      border:1px solid rgba(254,187,19,.2);
+      border-radius:20px;padding:70px 56px;
+      box-shadow: var(--shadow), 0 0 100px rgba(254,187,19,.06);
+      position:relative;overflow:hidden;text-align:center;
+    }
+    .dl-inner::before {
+      content:'';position:absolute;top:0;left:0;right:0;
+      height:1px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);
+    }
+    .dl-inner h2 { font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.03em; }
+    .dl-inner p { color:var(--muted);margin-top:14px;font-size:.95rem;max-width:460px;margin-left:auto;margin-right:auto; }
+
+    .dl-buttons { display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:44px; }
+
+    .dl-btn {
+      display:flex;align-items:center;gap:14px;
+      padding:18px 28px;border-radius:12px;cursor:pointer;
+      border:none;transition:all .28s;min-width:200px;
+      text-align:left; text-decoration:none;
+    }
+    .dl-btn.mac { background:#111;border:1px solid rgba(255,255,255,.1);color:#fff; }
+    .dl-btn.win { background:#0d1f3c;border:1px solid rgba(30,100,200,.25);color:#fff; }
+    .dl-btn.ios { background:#111;border:1px solid rgba(255,255,255,.1);color:#fff; }
+    .dl-btn.and { background:#0a1f12;border:1px solid rgba(30,150,60,.2);color:#fff; }
+    .dl-btn:hover { transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.6); }
+    .dl-btn.featured { border-color:var(--yellow);box-shadow:0 0 0 1px var(--yellow), var(--glow-y); }
+    .dl-btn-ico { font-size:1.8rem; }
+    .dl-btn-label { font-size:.65rem;opacity:.55;text-transform:uppercase;letter-spacing:.05em; }
+    .dl-btn-name  { font-size:.95rem;font-weight:800;margin-top:2px; }
+    .dl-btn-meta  { font-size:.6rem;opacity:.4;margin-top:2px; }
+
+    .rec-wrap { position:relative; }
+    .rec-badge {
+      position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+      background:var(--yellow);color:#000;font-size:.58rem;font-weight:900;
+      padding:3px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;
+      white-space:nowrap;
+    }
+
+    .dl-notice { margin-top:22px;font-size:.78rem;color:var(--muted); }
+    .dl-notice strong { color:var(--yellow); }
+
+    .dl-divider { width:1px;background:var(--border);margin:0 4px;align-self:stretch; }
+
+    /* ══════════════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════════════ */
+    footer {
+      position:relative;z-index:1;
+      border-top:1px solid var(--border);
+      padding:48px 24px 40px;
+      text-align:center;color:var(--muted);font-size:.84rem;
+    }
+    .ft-logo { font-size:1rem;font-weight:900;color:#fff;margin-bottom:10px;letter-spacing:-.01em; }
+    .ft-logo span { color:var(--yellow); }
+    .ft-tagline { font-size:.82rem;max-width:380px;margin:0 auto 20px; }
+    .ft-links { display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:24px; }
+    .ft-links a:hover { color:#fff; }
+    .ft-socials { display:flex;gap:10px;justify-content:center; }
+    .ft-soc {
+      width:36px;height:36px;border-radius:8px;
+      background:rgba(255,255,255,.04);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;font-size:.9rem;
+      transition:all .2s;
+    }
+    .ft-soc:hover { background:var(--yellow);border-color:var(--yellow);color:#000;transform:translateY(-2px); }
+    .ft-copy { margin-top:28px;font-size:.72rem;opacity:.35; }
+
+    /* ── Fade up animation ───────────────────────────────────── */
+    .fu { opacity:0;transform:translateY(28px);transition:opacity .55s ease, transform .55s ease; }
+    .fu.in { opacity:1;transform:none; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width:800px) {
+      nav { padding:0 20px; }
+      .nav-links { display:none; }
+      .plat-grid { grid-template-columns:1fr; }
+      .kpi-row { grid-template-columns:repeat(2,1fr); }
+      .content-row { grid-template-columns:1fr; }
+      .dl-inner { padding:44px 22px; }
+      .hero-stats { flex-direction:column;gap:0;border:none; }
+      .stat { border-right:none;border-bottom:1px solid var(--border); }
+      .phone:nth-child(1),.phone:nth-child(3) { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">IFX</div>
+    Intelligence<span style="color:var(--yellow)">FX</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#download">Download</a>
+  </div>
+  <a class="nav-cta" href="#download">Download App</a>
+</nav>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero">
+  <div class="glow-hero"></div>
+
+  <div class="hero-eyebrow">Now Available · Desktop &amp; Mobile</div>
+
+  <h1>Trade with an<br><em>unfair advantage.</em></h1>
+
+  <p class="hero-sub">
+    The all-in-one forex education and trading journal platform. Track every trade, master your risk, and grow alongside real mentors — on every device.
+  </p>
+
+  <!-- View toggle -->
+  <div class="view-toggle" id="viewToggle">
+    <button class="vt-btn active" onclick="setView('mobile',this)">📱&nbsp; Mobile</button>
+    <button class="vt-btn"       onclick="setView('desktop',this)">🖥️&nbsp; Desktop</button>
+  </div>
+
+  <!-- Smart CTA -->
+  <div class="hero-cta" id="heroCta"></div>
+
+  <!-- Stats -->
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n">10<span>K+</span></div><div class="stat-l">Active Traders</div></div>
+    <div class="stat"><div class="stat-n"><span>$</span>2.4<span>M</span></div><div class="stat-l">Profits Tracked</div></div>
+    <div class="stat"><div class="stat-n">68<span>%</span></div><div class="stat-l">Avg Win Rate</div></div>
+    <div class="stat"><div class="stat-n">28<span>+</span></div><div class="stat-l">Currency Pairs</div></div>
+  </div>
+</section>
+
+<!-- ════════ SHOWCASE ════════ -->
+<section class="showcase" id="showcase">
+  <p class="sec-label">App Preview</p>
+  <h2 class="sec-title fu">Every screen built for the serious trader</h2>
+  <p class="sec-sub fu">Adaptive layouts. Same powerful data. Optimised for each device.</p>
+
+  <div class="screen-wrap" id="screenWrap" data-view="mobile">
+
+    <!-- ─── MOBILE ─── -->
+    <div class="mobile-view">
+
+      <!-- Phone 1: Journal -->
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="scr">
+          <div class="scr-header">
+            <div><div class="scr-title">Trading Journal</div><div class="scr-sub">This month</div></div>
+            <div class="ava">A</div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">Win Rate</div>
+            <div class="card-val clr-green">68.4%</div>
+            <div class="mini-bar"><div class="mini-bar-fill" style="width:68%;background:linear-gradient(90deg,#3ddc84,#1faa60)"></div></div>
+            <div class="pill-row">
+              <span class="pill pill-g">+$1,240 week</span>
+              <span class="pill pill-w">38 trades</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">Equity Curve</div>
+            <div class="sparkline">
+              <svg viewBox="0 0 200 46" preserveAspectRatio="none">
+                <defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3ddc84" stop-opacity=".35"/><stop offset="100%" stop-color="#3ddc84" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0,40 L25,36 L50,38 L75,26 L100,20 L125,28 L150,14 L175,8 L200,3" fill="none" stroke="#3ddc84" stroke-width="2"/>
+                <path d="M0,40 L25,36 L50,38 L75,26 L100,20 L125,28 L150,14 L175,8 L200,3 L200,46 L0,46 Z" fill="url(#sg1)"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="t-row"><div><div class="t-pair">EUR/USD</div><div class="t-meta">Buy · 0.5 lot</div></div><div class="t-pnl clr-green">+$245</div></div>
+          <div class="t-row"><div><div class="t-pair">XAU/USD</div><div class="t-meta">Sell · 0.2 lot</div></div><div class="t-pnl clr-red">−$82</div></div>
+          <div class="t-row"><div><div class="t-pair">GBP/JPY</div><div class="t-meta">Buy · 0.3 lot</div></div><div class="t-pnl clr-green">+$178</div></div>
+        </div>
+        <div class="bnav">
+          <div class="bnav-i"><div class="bnav-ico">🏠</div><div class="bnav-lbl">Home</div></div>
+          <div class="bnav-i on"><div class="bnav-ico">📓</div><div class="bnav-dot"></div><div class="bnav-lbl">Journal</div></div>
+          <div class="bnav-i"><div class="bnav-ico">🧮</div><div class="bnav-lbl">Calc</div></div>
+          <div class="bnav-i"><div class="bnav-ico">🎓</div><div class="bnav-lbl">Learn</div></div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Dashboard (centre / hero) -->
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="scr">
+          <div class="scr-header">
+            <div><div class="scr-sub">Good morning 👋</div><div class="scr-title">Dashboard</div></div>
+            <div class="ava">A</div>
+          </div>
+
+          <div class="card" style="background:rgba(254,187,19,.07);border-color:rgba(254,187,19,.2)">
+            <div class="card-label">Account Balance</div>
+            <div class="card-val" style="font-size:1.1rem">$12,847.50</div>
+            <div style="font-size:.52rem;color:var(--green);margin-top:5px">▲ +8.3% this month</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px">
+            <div class="card">
+              <div class="card-label">Risk / Reward</div>
+              <div class="card-val clr-yel">1 : 2.4</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Avg Win</div>
+              <div class="card-val clr-green">$186</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">Weekly Trades</div>
+            <div class="sparkline">
+              <svg viewBox="0 0 200 46" preserveAspectRatio="none">
+                <rect x="8"  y="26" width="22" height="20" rx="3" fill="rgba(254,187,19,.2)"/>
+                <rect x="38" y="16" width="22" height="30" rx="3" fill="rgba(254,187,19,.2)"/>
+                <rect x="68" y="30" width="22" height="16" rx="3" fill="rgba(254,187,19,.2)"/>
+                <rect x="98" y="6"  width="22" height="40" rx="3" fill="var(--yellow)"/>
+                <rect x="128" y="18" width="22" height="28" rx="3" fill="rgba(254,187,19,.2)"/>
+                <rect x="158" y="22" width="22" height="24" rx="3" fill="rgba(254,187,19,.2)"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="card" style="background:rgba(61,220,132,.05);border-color:rgba(61,220,132,.15)">
+            <div class="card-label">Active Signal</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+              <div>
+                <div style="font-size:.68rem;font-weight:800">EUR/USD Buy</div>
+                <div style="font-size:.5rem;color:var(--muted)">TP 1.0850 · SL 1.0780</div>
+              </div>
+              <span class="pill pill-g">● Live</span>
+            </div>
+          </div>
+        </div>
+        <div class="bnav">
+          <div class="bnav-i on"><div class="bnav-ico">🏠</div><div class="bnav-dot"></div><div class="bnav-lbl">Home</div></div>
+          <div class="bnav-i"><div class="bnav-ico">📓</div><div class="bnav-lbl">Journal</div></div>
+          <div class="bnav-i"><div class="bnav-ico">🧮</div><div class="bnav-lbl">Calc</div></div>
+          <div class="bnav-i"><div class="bnav-ico">🎓</div><div class="bnav-lbl">Learn</div></div>
+        </div>
+      </div>
+
+      <!-- Phone 3: Calculator -->
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="scr">
+          <div class="scr-header">
+            <div><div class="scr-sub">Risk Manager</div><div class="scr-title">Calculator</div></div>
+            <div class="ava">A</div>
+          </div>
+
+          <div class="calc-row-2">
+            <div class="calc-in"><div class="calc-in-label">Currency Pair</div><div class="calc-in-val">EUR/USD</div></div>
+            <div class="calc-in"><div class="calc-in-label">Account</div><div class="calc-in-val">USD</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">Account Size</div>
+            <div class="card-val">$10,000</div>
+          </div>
+
+          <div class="calc-row-2">
+            <div class="calc-in"><div class="calc-in-label">Stop Loss</div><div class="calc-in-val">25 pips</div></div>
+            <div class="calc-in"><div class="calc-in-label">Risk %</div><div class="calc-in-val">2%</div></div>
+          </div>
+
+          <div class="calc-result">
+            <div class="calc-result-label">Lot Size</div>
+            <div class="calc-result-val">0.80 lots</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px">
+            <div class="card"><div class="card-label">$ at Risk</div><div class="card-val clr-red" style="font-size:.8rem">$200</div></div>
+            <div class="card"><div class="card-label">Pip Value</div><div class="card-val clr-yel" style="font-size:.8rem">$8.00</div></div>
+          </div>
+
+          <div class="pill-row" style="margin-top:9px">
+            <span class="pill pill-y">28+ Pairs</span>
+            <span class="pill pill-g">Gold XAU</span>
+            <span class="pill pill-w">Auto-calc</span>
+          </div>
+        </div>
+        <div class="bnav">
+          <div class="bnav-i"><div class="bnav-ico">🏠</div><div class="bnav-lbl">Home</div></div>
+          <div class="bnav-i"><div class="bnav-ico">📓</div><div class="bnav-lbl">Journal</div></div>
+          <div class="bnav-i on"><div class="bnav-ico">🧮</div><div class="bnav-dot"></div><div class="bnav-lbl">Calc</div></div>
+          <div class="bnav-i"><div class="bnav-ico">🎓</div><div class="bnav-lbl">Learn</div></div>
+        </div>
+      </div>
+
+    </div><!-- /mobile-view -->
+
+    <!-- ─── DESKTOP ─── -->
+    <div class="desktop-view">
+      <div class="df">
+        <div class="df-bar">
+          <div class="df-dots"><div class="df-dot r"></div><div class="df-dot y"></div><div class="df-dot g"></div></div>
+          <div class="df-bar-title">Intelligence FX — Trading Journal</div>
+          <div class="df-bar-right"><div class="df-tag">● Live Account</div></div>
+        </div>
+
+        <div class="df-body">
+          <!-- Sidebar -->
+          <div class="df-sidebar">
+            <div class="df-logo"><div class="df-logo-mark">IFX</div>Intelligence FX</div>
+
+            <div class="df-sec">Overview</div>
+            <div class="df-item on"><span class="df-item-ico">📊</span>Dashboard</div>
+            <div class="df-item"><span class="df-item-ico">📓</span>Journal<span class="df-badge">38</span></div>
+            <div class="df-item"><span class="df-item-ico">📅</span>Calendar</div>
+
+            <div class="df-sec">Tools</div>
+            <div class="df-item"><span class="df-item-ico">🧮</span>Calculator</div>
+            <div class="df-item"><span class="df-item-ico">📈</span>Trading Floor</div>
+            <div class="df-item"><span class="df-item-ico">📋</span>Annual Plan</div>
+
+            <div class="df-sec">Education</div>
+            <div class="df-item"><span class="df-item-ico">🎓</span>Courses</div>
+            <div class="df-item"><span class="df-item-ico">🔥</span>Bootcamp<span class="df-badge">New</span></div>
+            <div class="df-item"><span class="df-item-ico">📚</span>Resources</div>
+          </div>
+
+          <!-- Main content -->
+          <div class="df-main">
+            <div class="df-top">
+              <div>
+                <div class="df-page-title">Good Morning, Alex 👋</div>
+                <div class="df-page-sub">Thursday · Live Account · USD</div>
+              </div>
+              <div class="df-actions">
+                <button class="df-btn g">+ New Trade</button>
+                <button class="df-btn p">Export Report</button>
+              </div>
+            </div>
+
+            <div class="kpi-row">
+              <div class="kpi"><div class="kpi-label">Balance</div><div class="kpi-val">$12,847</div><div class="kpi-change clr-green">▲ +8.3% this month</div></div>
+              <div class="kpi"><div class="kpi-label">Win Rate</div><div class="kpi-val clr-yel">68.4%</div><div class="kpi-change clr-green">▲ +4.2% vs last month</div></div>
+              <div class="kpi"><div class="kpi-label">Risk / Reward</div><div class="kpi-val clr-green">1 : 2.4</div><div class="kpi-change" style="color:var(--muted)">38 total trades</div></div>
+              <div class="kpi"><div class="kpi-label">Net P&amp;L</div><div class="kpi-val clr-green">+$1,240</div><div class="kpi-change clr-green">▲ best week this Q</div></div>
+            </div>
+
+            <div class="content-row">
+              <div class="df-panel">
+                <div class="df-panel-title">Equity Curve <span>Last 30 days</span></div>
+                <div class="df-chart">
+                  <svg viewBox="0 0 500 130" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="dg1" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#FEBB13" stop-opacity=".2"/>
+                        <stop offset="100%" stop-color="#FEBB13" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <!-- grid -->
+                    <line x1="0" y1="32" x2="500" y2="32" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+                    <line x1="0" y1="64" x2="500" y2="64" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+                    <line x1="0" y1="96" x2="500" y2="96" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+                    <path d="M0,110 L40,102 L80,105 L120,88 L160,76 L200,85 L240,64 L280,52 L320,42 L360,32 L400,22 L450,14 L500,8" fill="none" stroke="var(--yellow)" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M0,110 L40,102 L80,105 L120,88 L160,76 L200,85 L240,64 L280,52 L320,42 L360,32 L400,22 L450,14 L500,8 L500,130 L0,130 Z" fill="url(#dg1)"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="df-panel">
+                <div class="df-panel-title">Recent Trades</div>
+                <table class="df-table">
+                  <thead><tr><th>Pair</th><th>Type</th><th>Lots</th><th>P&amp;L</th><th>Result</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>EUR/USD</strong></td><td>Buy</td><td>0.50</td><td class="clr-green">+$245</td><td><span class="db w">Win</span></td></tr>
+                    <tr><td><strong>XAU/USD</strong></td><td>Sell</td><td>0.20</td><td class="clr-red">−$82</td><td><span class="db l">Loss</span></td></tr>
+                    <tr><td><strong>GBP/JPY</strong></td><td>Buy</td><td>0.30</td><td class="clr-green">+$178</td><td><span class="db w">Win</span></td></tr>
+                    <tr><td><strong>USD/CAD</strong></td><td>Sell</td><td>0.10</td><td class="clr-yel">BE</td><td><span class="db o">Open</span></td></tr>
+                    <tr><td><strong>NZD/USD</strong></td><td>Buy</td><td>0.25</td><td class="clr-green">+$94</td><td><span class="db w">Win</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div><!-- /df-main -->
+        </div>
+      </div>
+    </div><!-- /desktop-view -->
+
+  </div><!-- /screen-wrap -->
+</section>
+
+<!-- ════════ FEATURES ════════ -->
+<section class="features" id="features">
+  <div class="feat-head fu">
+    <p class="sec-label">What's Inside</p>
+    <h2 class="sec-title">Built for traders who take it seriously</h2>
+    <p class="sec-sub" style="margin:12px auto 0">From your first demo trade to managing live accounts — IntelligenceFX has the tools.</p>
+  </div>
+
+  <div class="feat-grid fu">
+    <div class="feat-card">
+      <span class="feat-ico">📓</span>
+      <div class="feat-title">Smart Trading Journal</div>
+      <div class="feat-desc">Log every trade with full detail — entry, exit, lot size, and notes. Track win rate, average R:R, P&amp;L distribution, and streaks across single or multiple accounts.</div>
+      <div class="feat-tag">Journal · Analytics · Multi-account →</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-ico">🧮</span>
+      <div class="feat-title">Forex Risk Calculator</div>
+      <div class="feat-desc">Input account size, stop loss in pips, and risk percentage — get the exact lot size instantly. Supports 28+ pairs including XAU/USD, indices, and crypto pairs.</div>
+      <div class="feat-tag">28+ Pairs · Auto-calculate · Risk-first →</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-ico">🎓</span>
+      <div class="feat-title">Courses &amp; Bootcamp</div>
+      <div class="feat-desc">Structured video courses with assignments and progress tracking. The bootcamp keeps you accountable week over week with real mentor feedback and live sessions.</div>
+      <div class="feat-tag">Video courses · Assignments · Live feedback →</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-ico">📅</span>
+      <div class="feat-title">Economic Calendar</div>
+      <div class="feat-desc">Stay ahead of high-impact events. The integrated calendar shows NFP, CPI, FOMC, and every market-moving release — synced to your timezone and account.</div>
+      <div class="feat-tag">Real-time · Timezone sync · Impact filter →</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-ico">📊</span>
+      <div class="feat-title">Deep Analytics</div>
+      <div class="feat-desc">Profit distribution, drawdown curves, daily P&amp;L calendar, trade streaks, and self-review modules. Know exactly where you win — and where you leak money.</div>
+      <div class="feat-tag">Charts · Self-review · Drawdown →</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-ico">🔗</span>
+      <div class="feat-title">Multi-Account Linking</div>
+      <div class="feat-desc">Connect multiple broker accounts and view all journals in one place. Switch between live and demo seamlessly — ideal for traders running multiple strategies.</div>
+      <div class="feat-tag">Broker sync · Live &amp; Demo · Unified →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ PLATFORMS ════════ -->
+<section class="platforms" id="platforms">
+  <div class="plat-inner">
+    <div class="plat-head fu">
+      <p class="sec-label">Available On</p>
+      <h2 class="sec-title">Your platform. Your choice.</h2>
+      <p class="sec-sub" style="margin:12px auto 0">One account synced across every device you own.</p>
+    </div>
+
+    <div class="plat-grid">
+      <div class="plat-card fu">
+        <div class="plat-corner"></div>
+        <span class="plat-icon">🖥️</span>
+        <div class="plat-title">Desktop App</div>
+        <p class="plat-desc">The full-power IntelligenceFX experience. Built natively for macOS and Windows with a spacious multi-panel dashboard, keyboard shortcuts, and offline support.</p>
+        <ul class="plat-list">
+          <li>Full trading journal dashboard</li>
+          <li>Multi-panel layout with resizable windows</li>
+          <li>Keyboard shortcuts &amp; power-user tools</li>
+          <li>Offline mode with automatic sync</li>
+          <li>Native feel on macOS &amp; Windows</li>
+        </ul>
+        <button class="btn-plat desk" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">
+          ⬇&nbsp; Download Desktop App
+        </button>
+        <div class="os-row">
+          <div class="os-tag">🍎 macOS</div>
+          <div class="os-tag">🪟 Windows</div>
+        </div>
+      </div>
+
+      <div class="plat-card fu">
+        <div class="plat-corner"></div>
+        <span class="plat-icon">📱</span>
+        <div class="plat-title">Mobile App</div>
+        <p class="plat-desc">Log trades in seconds, check your journal on the go, run the calculator, and get push-notification signals — all from your pocket.</p>
+        <ul class="plat-list">
+          <li>One-tap trade logging</li>
+          <li>Push notifications for signals &amp; alerts</li>
+          <li>Full journal, calculator &amp; course access</li>
+          <li>Biometric login (Face ID / fingerprint)</li>
+          <li>iOS &amp; Android, fully native</li>
+        </ul>
+        <button class="btn-plat mob" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">
+          📲&nbsp; Get Mobile App
+        </button>
+        <div class="os-row">
+          <div class="os-tag">🍎 iOS</div>
+          <div class="os-tag">🤖 Android</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ DOWNLOAD ════════ -->
+<section class="download" id="download">
+  <div class="dl-inner fu">
+    <h2>Download Intelligence<span style="color:var(--yellow)">FX</span></h2>
+    <p>Free to start. One account across all your devices. Join thousands of traders already winning.</p>
+
+    <div class="dl-buttons" id="dlButtons"></div>
+    <div class="dl-notice" id="dlNotice"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">Intelligence<span>FX</span></div>
+  <p class="ft-tagline">Empowering traders with education, tools, and real mentorship to achieve consistent profitability.</p>
+  <div class="ft-links">
+    <a href="#">Features</a>
+    <a href="#">Pricing</a>
+    <a href="#">Mentors</a>
+    <a href="#">Support</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+  <div class="ft-socials">
+    <a class="ft-soc" href="#">𝕏</a>
+    <a class="ft-soc" href="#">in</a>
+    <a class="ft-soc" href="#">▶</a>
+    <a class="ft-soc" href="#">📷</a>
+    <a class="ft-soc" href="#">🎵</a>
+    <a class="ft-soc" href="#">💬</a>
+  </div>
+  <p class="ft-copy">© 2025 IntelligenceFX. All rights reserved.</p>
+</footer>
+
+<script>
+/* ── Platform detection ───────────────────────────────────────── */
+const ua        = navigator.userAgent;
+const isMac     = /Macintosh|Mac OS X/i.test(ua) && !/iPhone|iPad/.test(ua);
+const isWin     = /Windows/i.test(ua);
+const isIOS     = /iPhone|iPad|iPod/i.test(ua);
+const isAndroid = /Android/i.test(ua);
+
+const DL = {
+  mac: {
+    cls:'mac', ico:'🍎', label:'Download for', name:'macOS',
+    meta:'.dmg · 82 MB',
+    href:'https://ejn-dev.s3.us-west-1.amazonaws.com/apks/fx/ForexApp.dmg'
+  },
+  win: {
+    cls:'win', ico:'🪟', label:'Download for', name:'Windows',
+    meta:'.exe · 74 MB', href:'#'
+  },
+  ios: {
+    cls:'ios', ico:'🍎', label:'Download on the', name:'App Store',
+    meta:'iOS 14+', href:'https://apps.apple.com/tz/app/intelligencefx/id1663934841'
+  },
+  and: {
+    cls:'and', ico:'🤖', label:'Get it on', name:'Google Play',
+    meta:'Android 8+', href:'https://play.google.com/store/apps/details?id=com.intelligencefx.app&pcampaignid=web_share'
+  }
+};
+
+function makeBtn(key, featured) {
+  const d = DL[key];
+  const wrap = document.createElement('div');
+  wrap.style.position = 'relative';
+  if (featured) {
+    const badge = document.createElement('div');
+    badge.className = 'rec-badge';
+    badge.textContent = '✦ Recommended for you';
+    wrap.appendChild(badge);
+  }
+  const a = document.createElement('a');
+  a.href = d.href;
+  a.className = 'dl-btn ' + d.cls + (featured ? ' featured' : '');
+  a.innerHTML = `
+    <div class="dl-btn-ico">${d.ico}</div>
+    <div>
+      <div class="dl-btn-label">${d.label}</div>
+      <div class="dl-btn-name">${d.name}</div>
+      <div class="dl-btn-meta">${d.meta}</div>
+    </div>`;
+  wrap.appendChild(a);
+  return wrap;
+}
+
+function buildDownload() {
+  const container = document.getElementById('dlButtons');
+  const notice    = document.getElementById('dlNotice');
+  let order, detected;
+
+  if      (isMac)     { order = ['mac','win','ios','and']; detected = 'macOS';   }
+  else if (isWin)     { order = ['win','mac','ios','and']; detected = 'Windows'; }
+  else if (isIOS)     { order = ['ios','and','mac','win']; detected = 'iOS';     }
+  else if (isAndroid) { order = ['and','ios','mac','win']; detected = 'Android'; }
+  else                { order = ['mac','win','ios','and']; detected = null;       }
+
+  order.forEach((k, i) => container.appendChild(makeBtn(k, i === 0)));
+
+  if (detected) {
+    notice.innerHTML = `We detected <strong>${detected}</strong> — the best version is highlighted for you.`;
+  } else {
+    notice.innerHTML = 'Available on all platforms — pick yours above.';
+  }
+}
+
+/* ── Hero CTA ─────────────────────────────────────────────────── */
+function buildHeroCta() {
+  const cta = document.getElementById('heroCta');
+
+  let primary;
+  if (isMac) {
+    primary = { ico:'🍎', sub:'Download for', name:'macOS (.dmg)', href: DL.mac.href, main: true };
+  } else if (isWin) {
+    primary = { ico:'🪟', sub:'Download for', name:'Windows (.exe)', href: '#', main: true };
+  } else if (isIOS) {
+    primary = { ico:'🍎', sub:'Download on the', name:'App Store', href: '#', main: true };
+  } else if (isAndroid) {
+    primary = { ico:'🤖', sub:'Get it on', name:'Google Play', href: '#', main: true };
+  } else {
+    primary = { ico:'🍎', sub:'Download for', name:'macOS (.dmg)', href: DL.mac.href, main: true };
+  }
+
+  const a = document.createElement('a');
+  a.href = primary.href;
+  a.className = 'btn-hero main';
+  a.innerHTML = `<span class="btn-hero-icon">${primary.ico}</span><div><div class="btn-hero-sub">${primary.sub}</div><div class="btn-hero-name">${primary.name}</div></div>`;
+  cta.appendChild(a);
+
+  const b = document.createElement('a');
+  b.href = '#platforms';
+  b.className = 'btn-hero ghost';
+  b.innerHTML = `<span class="btn-hero-icon">📲</span><div><div class="btn-hero-sub">Also available on</div><div class="btn-hero-name">Mobile App</div></div>`;
+  cta.appendChild(b);
+}
+
+/* ── View toggle ──────────────────────────────────────────────── */
+function setView(view, btn) {
+  document.querySelectorAll('.vt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('screenWrap').dataset.view = view;
+}
+
+/* ── Scroll reveal ────────────────────────────────────────────── */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('in'), i * 90);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fu').forEach(el => obs.observe(el));
+
+/* ── Init ─────────────────────────────────────────────────────── */
+buildHeroCta();
+buildDownload();
+</script>
+</body>
+</html>
