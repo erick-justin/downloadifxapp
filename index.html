@@ -1032,7 +1032,7 @@ const DL = {
   },
   win: {
     cls:'win', ico:ICONS.windows, label:'Download for', name:'Windows',
-    meta:'.exe · 74 MB', href:'#'
+    meta:'.zip · Windows', href:'https://github.com/erick-justin/forexapp/releases/latest/download/IntelligenceFX-windows.zip'
   },
   ios: {
     cls:'ios', ico:ICONS.apple, label:'Download on the', name:'App Store',
@@ -1094,7 +1094,7 @@ function buildHeroCta() {
 
   let primary;
   if (isMac)     { primary = { ico:ICONS.apple,   sub:'Download for',     name:'macOS (.dmg)',    href: DL.mac.href }; }
-  else if (isWin){ primary = { ico:ICONS.windows, sub:'Download for',     name:'Windows (.exe)',  href: '#' }; }
+  else if (isWin){ primary = { ico:ICONS.windows, sub:'Download for',     name:'Windows (.zip)',  href: 'https://github.com/erick-justin/forexapp/releases/latest/download/IntelligenceFX-windows.zip' }; }
   else if (isIOS){ primary = { ico:ICONS.apple,   sub:'Download on the',  name:'App Store',       href: DL.ios.href }; }
   else if (isAndroid){ primary = { ico:ICONS.gplay, sub:'Get it on',      name:'Google Play',     href: DL.and.href }; }
   else           { primary = { ico:ICONS.apple,   sub:'Download for',     name:'macOS (.dmg)',    href: DL.mac.href }; }
