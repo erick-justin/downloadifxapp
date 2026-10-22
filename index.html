@@ -467,6 +467,8 @@
 
     .dl-notice { margin-top:22px;font-size:.78rem;color:var(--muted); }
     .dl-notice strong { color:var(--yellow); }
+    .dl-intel { margin-top:10px; }
+    .dl-intel a { color:var(--yellow); text-decoration:underline; }
 
     .dl-divider { width:1px;background:var(--border);margin:0 4px;align-self:stretch; }
 
@@ -1027,8 +1029,13 @@ const ICONS = {
 const DL = {
   mac: {
     cls:'mac', ico:ICONS.apple, label:'Download for', name:'macOS',
-    meta:'.dmg · 82 MB',
+    meta:'.dmg · Apple Silicon (M1 and newer)',
     href:'https://ejn-dev.s3.us-west-1.amazonaws.com/apks/fx/IntelligenceFX.dmg'
+  },
+  // Intel Macs: the last build that runs on Intel (2.2.7). From 2.3.0 the
+  // Mac app is Apple Silicon only.
+  macIntel: {
+    href:'https://ejn-dev.s3.us-west-1.amazonaws.com/apks/fx/IntelligenceFX-2.2.7-intel.dmg'
   },
   win: {
     cls:'win', ico:ICONS.windows, label:'Download for', name:'Windows',
@@ -1086,6 +1093,7 @@ function buildDownload() {
   } else {
     notice.innerHTML = 'Available on all platforms — pick yours above.';
   }
+  notice.innerHTML += `<div class="dl-intel">Using an Intel Mac? <a href="${DL.macIntel.href}">Download the Intel Mac version (2.2.7)</a></div>`;
 }
 
 /* ── Hero CTA ─────────────────────────────────────────────────── */
